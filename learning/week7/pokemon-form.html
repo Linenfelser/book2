@@ -56,7 +56,7 @@
     <body>
         <!-- body:start -->
         
-    <div class="book" data-level="1.1.6" data-basepath="../.." data-revision="Fri Oct 09 2015 14:46:15 GMT-0600 (MDT)">
+    <div class="book" data-level="1.1.6" data-basepath="../.." data-revision="Mon Oct 12 2015 00:07:57 GMT-0600 (MDT)">
     
 
 <div class="book-summary">
@@ -419,7 +419,8 @@ $.get(&apos;/data/pokemon-small.json&apos;)
  .success(function(data){
      console.log(&apos;data loaded&apos;, data)
      // TODO: show in the myviz that the data is loaded
-     pokemonData = data          
+     pokemonData = data
+     $(&apos;.myviz&apos;).html(&apos;number of records load:&apos; + data.length)        
  })
 
 
@@ -478,7 +479,7 @@ function vizAsHorizontalBars(attributeName){
 
 $(&apos;button#viz-horizontal&apos;).click(function(){
     // TODO: replace this line with JQuery code to grab the attribute name
-    var attributeName = &apos;Attack&apos;
+    var attributeName = $(&apos;input#pokemon-attribute-name&apos;).val()
     vizAsHorizontalBars(attributeName)
 })  
 
@@ -486,26 +487,94 @@ $(&apos;button#viz-horizontal&apos;).click(function(){
 // TODO: complete the code below
 
 function vizSideBySide(attributeName1, attributeName2){
+    var tplString = &apos;&lt;g transform=&quot;translate(120 ${d.y})&quot;&gt; \
+                    &lt;rect   \
+                         x=&quot;${d.aX}&quot; \
+                         width=&quot;${d.aWidth}&quot; \
+                         height=&quot;20&quot;    \
+                         style=&quot;fill:${d.aColor};    \
+                                stroke-width:3; \
+                                stroke:rgb(0,0,0)&quot; /&gt;   \
+                    &lt;rect \
+                        x=&quot;${d.bX}&quot; \
+                         width=&quot;${d.bWidth}&quot; \
+                         height=&quot;20&quot;    \
+                         style=&quot;fill:${d.bColor};    \
+                                stroke-width:3; \
+                                stroke:rgb(0,0,0)&quot; /&gt;   \
+                    &lt;text transform=&quot;translate(0 15)&quot;&gt; \
+                        ${d.label} \
+                    &lt;/text&gt; \
+                    &lt;/g&gt;&apos;
 
+    // compile the string to get a template function
+    var template = _.template(tplString)
+
+    function computeAX(d, i) {
+        return -d[attributeName1]
+    }
+
+    function computeBX(d, i) {
+        return 0
+    }
+
+    function computeAWidth(d, i) {
+        return d[attributeName1]
+    }
+
+    function computeBWidth(d, i) {
+        return d[attributeName2]
+    }
+
+    function computeY(d, i) {
+        return i * 20
+    }
+
+    function computeAColor(d, i) {
+        return &apos;red&apos;
+    }
+
+    function computeBColor(d, i) {
+        return &apos;blue&apos;
+    }
+
+    function computeLabel(d, i){
+        return d.Name
+    }
+
+    var viz = _.map(pokemonData, function(d, i){
+                return {
+                    aX: computeAX(d, i),
+                    bX: computeBX(d, i),
+                    aWidth: computeAWidth(d, i),
+                    bWidth: computeBWidth(d, i),
+                    y: computeY(d, i),
+                    aColor: computeAColor(d, i),
+                    bColor: computeBColor(d, i),
+                    label: computeLabel(d, i)
+                }
+             })
+    console.log(&apos;viz&apos;, viz)
+
+    var result = _.map(viz, function(d){
+             // invoke the compiled template function on each viz data
+             return template({d: d})
+         })
+    console.log(&apos;result&apos;, result)
+
+    $(&apos;.myviz&apos;).html(&apos;&lt;svg&gt;&apos; + result + &apos;&lt;/svg&gt;&apos;)
 }
 
-$(&apos;button#viz-horizontal&apos;).click(function(){    
-    var attributeName1 = &apos;TODO&apos;
-    var attributeName2 = &apos;TODO&apos;
+$(&apos;button#viz-compare&apos;).click(function(){    
+    var attributeName1 = $(&apos;input#pokemon-attribute-name-1&apos;).val()
+    var attributeName2 = $(&apos;input#pokemon-attribute-name-2&apos;).val()
     vizSideBySide(attributeName1, attributeName2)
 })  
+
 
 // TODO: complete the code below
 
 function vizAsSortedHorizontalBars(attributeName, sortDirection){
-
-}
-
-$(&apos;button#viz-horizontal&apos;).click(function(){    
-    var attributeName = &apos;TODO&apos;
-    var sortDirection = &apos;TODO&apos;
-    vizAsSortedHorizontalBars(attributeName, sortDirection)
-})  
 
 // TODO: complete the code below
 // visualize three attributes, the first two attributes as side-by-side bar charts
@@ -520,7 +589,7 @@ $(&apos;button#viz-three&apos;).click(function(){
     var attributeName2 = &apos;TODO&apos;
     var attributeName3 = &apos;TODO&apos;    
     vizThreeAttributes(attributeName1, attributeName2, attributeName3)
-})</code></pre><script>var code ="// pokemonData is a global variable\npokemonData = 'not loaded yet'\n\n$.get('/data/pokemon-small.json')\n .success(function(data){\n     console.log('data loaded', data)\n     // TODO: show in the myviz that the data is loaded\n     pokemonData = data          \n })\n\n\nfunction vizAsHorizontalBars(attributeName){\n\n    // TODO: modify this function to visualize the data as horizontal\n    // bars to compare attack points\n\n    // define a template string\n    var tplString = '<g transform=\"translate(0 ${d.y})\"> \\\n                    <rect   \\\n                         width=\"${d.width}\" \\\n                         height=\"20\"    \\\n                         style=\"fill:${d.color};    \\\n                                stroke-width:3; \\\n                                stroke:rgb(0,0,0)\" />   \\\n                    </g>'\n\n    // compile the string to get a template function\n    var template = _.template(tplString)\n\n    function computeX(d, i) {\n        return 0\n    }\n\n    function computeWidth(d, i) {        \n        return i * 20 + d[attributeName]\n    }\n\n    function computeY(d, i) {\n        return i * 20\n    }\n\n    function computeColor(d, i) {\n        return 'red'\n    }\n\n    var viz = _.map(pokemonData, function(d, i){\n                return {\n                    x: computeX(d, i),\n                    y: computeY(d, i),\n                    width: computeWidth(d, i),\n                    color: computeColor(d, i)\n                }\n             })\n    console.log('viz', viz)\n\n    var result = _.map(viz, function(d){\n             // invoke the compiled template function on each viz data\n             return template({d: d})\n         })\n    console.log('result', result)\n\n    $('.myviz').html('<svg>' + result + '</svg>')\n}\n\n$('button#viz-horizontal').click(function(){\n    // TODO: replace this line with JQuery code to grab the attribute name\n    var attributeName = 'Attack'\n    vizAsHorizontalBars(attributeName)\n})  \n\n\n// TODO: complete the code below\n\nfunction vizSideBySide(attributeName1, attributeName2){\n\n}\n\n$('button#viz-horizontal').click(function(){    \n    var attributeName1 = 'TODO'\n    var attributeName2 = 'TODO'\n    vizSideBySide(attributeName1, attributeName2)\n})  \n\n// TODO: complete the code below\n\nfunction vizAsSortedHorizontalBars(attributeName, sortDirection){\n\n}\n\n$('button#viz-horizontal').click(function(){    \n    var attributeName = 'TODO'\n    var sortDirection = 'TODO'\n    vizAsSortedHorizontalBars(attributeName, sortDirection)\n})  \n\n// TODO: complete the code below\n// visualize three attributes, the first two attributes as side-by-side bar charts\n// using bar widths to represent attribute values, and the third attribute's value\n// is represented using the red color brightness\nfunction vizThreeAttributes(attributeName1, attributeName2, attributeName3){\n\n}\n\n$('button#viz-three').click(function(){    \n    var attributeName1 = 'TODO'\n    var attributeName2 = 'TODO'\n    var attributeName3 = 'TODO'    \n    vizThreeAttributes(attributeName1, attributeName2, attributeName3)\n})"</script></p>
+})</code></pre><script>var code ="// pokemonData is a global variable\npokemonData = 'not loaded yet'\n\n$.get('/data/pokemon-small.json')\n .success(function(data){\n     console.log('data loaded', data)\n     // TODO: show in the myviz that the data is loaded\n     pokemonData = data\n     $('.myviz').html('number of records load:' + data.length)        \n })\n\n\nfunction vizAsHorizontalBars(attributeName){\n\n    // TODO: modify this function to visualize the data as horizontal\n    // bars to compare attack points\n\n    // define a template string\n    var tplString = '<g transform=\"translate(0 ${d.y})\"> \\\n                    <rect   \\\n                         width=\"${d.width}\" \\\n                         height=\"20\"    \\\n                         style=\"fill:${d.color};    \\\n                                stroke-width:3; \\\n                                stroke:rgb(0,0,0)\" />   \\\n                    </g>'\n\n    // compile the string to get a template function\n    var template = _.template(tplString)\n\n    function computeX(d, i) {\n        return 0\n    }\n\n    function computeWidth(d, i) {        \n        return i * 20 + d[attributeName]\n    }\n\n    function computeY(d, i) {\n        return i * 20\n    }\n\n    function computeColor(d, i) {\n        return 'red'\n    }\n\n    var viz = _.map(pokemonData, function(d, i){\n                return {\n                    x: computeX(d, i),\n                    y: computeY(d, i),\n                    width: computeWidth(d, i),\n                    color: computeColor(d, i)\n                }\n             })\n    console.log('viz', viz)\n\n    var result = _.map(viz, function(d){\n             // invoke the compiled template function on each viz data\n             return template({d: d})\n         })\n    console.log('result', result)\n\n    $('.myviz').html('<svg>' + result + '</svg>')\n}\n\n$('button#viz-horizontal').click(function(){\n    // TODO: replace this line with JQuery code to grab the attribute name\n    var attributeName = $('input#pokemon-attribute-name').val()\n    vizAsHorizontalBars(attributeName)\n})  \n\n\n// TODO: complete the code below\n\nfunction vizSideBySide(attributeName1, attributeName2){\n    var tplString = '<g transform=\"translate(120 ${d.y})\"> \\\n                    <rect   \\\n                         x=\"${d.aX}\" \\\n                         width=\"${d.aWidth}\" \\\n                         height=\"20\"    \\\n                         style=\"fill:${d.aColor};    \\\n                                stroke-width:3; \\\n                                stroke:rgb(0,0,0)\" />   \\\n                    <rect \\\n                        x=\"${d.bX}\" \\\n                         width=\"${d.bWidth}\" \\\n                         height=\"20\"    \\\n                         style=\"fill:${d.bColor};    \\\n                                stroke-width:3; \\\n                                stroke:rgb(0,0,0)\" />   \\\n                    <text transform=\"translate(0 15)\"> \\\n                        ${d.label} \\\n                    </text> \\\n                    </g>'\n\n    // compile the string to get a template function\n    var template = _.template(tplString)\n\n    function computeAX(d, i) {\n        return -d[attributeName1]\n    }\n\n    function computeBX(d, i) {\n        return 0\n    }\n\n    function computeAWidth(d, i) {\n        return d[attributeName1]\n    }\n\n    function computeBWidth(d, i) {\n        return d[attributeName2]\n    }\n\n    function computeY(d, i) {\n        return i * 20\n    }\n\n    function computeAColor(d, i) {\n        return 'red'\n    }\n\n    function computeBColor(d, i) {\n        return 'blue'\n    }\n\n    function computeLabel(d, i){\n        return d.Name\n    }\n\n    var viz = _.map(pokemonData, function(d, i){\n                return {\n                    aX: computeAX(d, i),\n                    bX: computeBX(d, i),\n                    aWidth: computeAWidth(d, i),\n                    bWidth: computeBWidth(d, i),\n                    y: computeY(d, i),\n                    aColor: computeAColor(d, i),\n                    bColor: computeBColor(d, i),\n                    label: computeLabel(d, i)\n                }\n             })\n    console.log('viz', viz)\n\n    var result = _.map(viz, function(d){\n             // invoke the compiled template function on each viz data\n             return template({d: d})\n         })\n    console.log('result', result)\n\n    $('.myviz').html('<svg>' + result + '</svg>')\n}\n\n$('button#viz-compare').click(function(){    \n    var attributeName1 = $('input#pokemon-attribute-name-1').val()\n    var attributeName2 = $('input#pokemon-attribute-name-2').val()\n    vizSideBySide(attributeName1, attributeName2)\n})  \n\n\n// TODO: complete the code below\n\nfunction vizAsSortedHorizontalBars(attributeName, sortDirection){\n\n// TODO: complete the code below\n// visualize three attributes, the first two attributes as side-by-side bar charts\n// using bar widths to represent attribute values, and the third attribute's value\n// is represented using the red color brightness\nfunction vizThreeAttributes(attributeName1, attributeName2, attributeName3){\n\n}\n\n$('button#viz-three').click(function(){    \n    var attributeName1 = 'TODO'\n    var attributeName2 = 'TODO'\n    var attributeName3 = 'TODO'    \n    vizThreeAttributes(attributeName1, attributeName2, attributeName3)\n})"</script></p>
 
                     
                     </section>
