@@ -46,18 +46,27 @@ $('button#show').click(function(){
 })
 
 $('button#setcolor').click(function(){    
-    // TODO: set the background color of the viz window to the specified color
-    $('.myviz').css('background-color','TODO')
+    var value = $('input#setcolor').val()
+    console.log(value)
+    $('.myviz').css('background-color', value)
 })
 
-// TODO: add an event handler for "Set Height" button to set the height of the
-// viz window to the specified value
+$('button#setheight').click(function(){    
+    var value = $('input#setheight').val()
+    console.log(value)
+    $('.myviz').height(value)
+})
+
 
 // TODO: add an event handler for "Show Bars (1)" to display a specified number of
 // vertical bars
-$('button#bars1').click(function(){    
-    var svg = "<svg><rect height='50' width='10'/><rect height='50' width='10' x='20'/></svg>"
-    $('.myviz').html(svg)    
+$('button#bars1').click(function(){	
+	var num = $('input#bars1')
+	for(i=0; i<num; i++){
+		var svg = "<svg><rect height='50' width='10' x='20*i'/></svg>"
+		return svg
+	}	
+	$('.myviz').html(svg)        
 })
 
 // TODO: add an event handler for "Show Bars (2)" to display a specified number of

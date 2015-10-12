@@ -52,7 +52,8 @@ $.get('/data/pokemon-small.json')
  .success(function(data){
      console.log('data loaded', data)
      // TODO: show in the myviz that the data is loaded
-     pokemonData = data          
+     pokemonData = data
+     $('.myviz').html('number of records load:' + data.length)        
  })
 
 
@@ -111,7 +112,7 @@ function vizAsHorizontalBars(attributeName){
 
 $('button#viz-horizontal').click(function(){
     // TODO: replace this line with JQuery code to grab the attribute name
-    var attributeName = 'Attack'
+    var attributeName = $('input#pokemon-attribute-name').val()
     vizAsHorizontalBars(attributeName)
 })  
 
@@ -119,26 +120,94 @@ $('button#viz-horizontal').click(function(){
 // TODO: complete the code below
 
 function vizSideBySide(attributeName1, attributeName2){
+    var tplString = '<g transform="translate(120 ${d.y})"> \
+                    <rect   \
+                         x="${d.aX}" \
+                         width="${d.aWidth}" \
+                         height="20"    \
+                         style="fill:${d.aColor};    \
+                                stroke-width:3; \
+                                stroke:rgb(0,0,0)" />   \
+                    <rect \
+                        x="${d.bX}" \
+                         width="${d.bWidth}" \
+                         height="20"    \
+                         style="fill:${d.bColor};    \
+                                stroke-width:3; \
+                                stroke:rgb(0,0,0)" />   \
+                    <text transform="translate(0 15)"> \
+                        ${d.label} \
+                    </text> \
+                    </g>'
 
+    // compile the string to get a template function
+    var template = _.template(tplString)
+
+    function computeAX(d, i) {
+        return -d[attributeName1]
+    }
+
+    function computeBX(d, i) {
+        return 0
+    }
+
+    function computeAWidth(d, i) {
+        return d[attributeName1]
+    }
+
+    function computeBWidth(d, i) {
+        return d[attributeName2]
+    }
+
+    function computeY(d, i) {
+        return i * 20
+    }
+
+    function computeAColor(d, i) {
+        return 'red'
+    }
+
+    function computeBColor(d, i) {
+        return 'blue'
+    }
+
+    function computeLabel(d, i){
+        return d.Name
+    }
+
+    var viz = _.map(pokemonData, function(d, i){
+                return {
+                    aX: computeAX(d, i),
+                    bX: computeBX(d, i),
+                    aWidth: computeAWidth(d, i),
+                    bWidth: computeBWidth(d, i),
+                    y: computeY(d, i),
+                    aColor: computeAColor(d, i),
+                    bColor: computeBColor(d, i),
+                    label: computeLabel(d, i)
+                }
+             })
+    console.log('viz', viz)
+
+    var result = _.map(viz, function(d){
+             // invoke the compiled template function on each viz data
+             return template({d: d})
+         })
+    console.log('result', result)
+
+    $('.myviz').html('<svg>' + result + '</svg>')
 }
 
-$('button#viz-horizontal').click(function(){    
-    var attributeName1 = 'TODO'
-    var attributeName2 = 'TODO'
+$('button#viz-compare').click(function(){    
+    var attributeName1 = $('input#pokemon-attribute-name-1').val()
+    var attributeName2 = $('input#pokemon-attribute-name-2').val()
     vizSideBySide(attributeName1, attributeName2)
 })  
+
 
 // TODO: complete the code below
 
 function vizAsSortedHorizontalBars(attributeName, sortDirection){
-
-}
-
-$('button#viz-horizontal').click(function(){    
-    var attributeName = 'TODO'
-    var sortDirection = 'TODO'
-    vizAsSortedHorizontalBars(attributeName, sortDirection)
-})  
 
 // TODO: complete the code below
 // visualize three attributes, the first two attributes as side-by-side bar charts
