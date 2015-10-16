@@ -248,13 +248,13 @@ function vizAsSortedHorizontalBars(attributeName, sortDirection){
     var sortdata='initial'
 
     if(sortDirection == 'ascend'){
-        sortdata=_.sortBy(pokemonData, function(mon){
-            return mon['Attack']
+        sortdata=_.sortBy(pokemonData, function(f){
+            return f['Attack']
             })
     }
     else if(sortDirection == 'descend'){
-        sortdata=_.sortBy(pokemonData, function(mon){
-            return mon['Attack']
+        sortdata=_.sortBy(pokemonData, function(f){
+            return f['Attack']
             }).reverse()
     }
 
@@ -290,10 +290,14 @@ $('button#viz-horizontal-sorted-desc').click(function(){
     vizAsSortedHorizontalBars(attributeName, sortDirection)
 })  
 
+
+
+
 // TODO: complete the code below
 // visualize three attributes, the first two attributes as side-by-side bar charts
 // using bar widths to represent attribute values, and the third attribute's value
 // is represented using the red color brightness
+
 function vizThreeAttributes(attributeName1, attributeName2, attributeName3){
         var tplString = '<g transform="translate(120 ${d.y})"> \
                     <rect   \
