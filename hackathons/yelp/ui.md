@@ -13,7 +13,7 @@ The question class you pick must have at least three variables that can be chang
         <input id="arg2" type="int" value="3"/>
     </div>
     <div><h5>State</h5>
-        <input id="arg3" type="int" value="AZ"/>
+        <input id="arg3" type="text" value="AZ"/>
     </div>    
     <div style="margin:20px;">
         <button id="viz">Vizualize</button>

@@ -3,17 +3,17 @@
 Pick one question class and build an exploratory visualization interface for it.
 The question class you pick must have at least three variables that can be changed.
 
-## (Question class)
+## How many business with X reviews have a rating of Y stars in Z state? 
 
 <div style="border:1px grey solid; padding:5px;">
-    <div><h5>X</h5>
-        <input id="arg1" type="text" value="something"/>
+    <div><h5>Reviews</h5>
+        <input id="arg1" type="int" value="10"/>
     </div>
-    <div><h5>Y</h5>
-        <input id="arg2" type="text" value="something"/>
+    <div><h5>Rating</h5>
+        <input id="arg2" type="int" value="3"/>
     </div>
-    <div><h5>Z</h5>
-        <input id="arg2" type="text" value="something"/>
+    <div><h5>State</h5>
+        <input id="arg3" type="int" value="AZ"/>
     </div>    
     <div style="margin:20px;">
         <button id="viz">Vizualize</button>
@@ -27,18 +27,17 @@ Data is not loaded yet
 {% script %}
 items = 'not loaded yet'
 
-console.log('lodash version:', _.VERSION)
-
 $.get('http://bigdatahci2015.github.io/data/yelp/yelp_academic_dataset_business.5000.json.lines.txt')
     .success(function(data){        
         var lines = data.trim().split('\n')
-
+       
         // convert text lines to json arrays and save them in `items`
         items = _.map(lines, JSON.parse)
+        $('.myviz').html('number of records load:' + items.length)
 
         console.log('number of items loaded:', items.length)
 
-        console.log('first item', items[0])
+        //console.log('first item', items[0])
      })
      .error(function(e){
          console.error(e)
@@ -65,8 +64,8 @@ function viz(arg1, arg2, arg3){
     }
 
     function computeWidth(d, i) {        
-        return i * 20 + 20
-    }
+        return d[1].length
+            }
 
     function computeY(d, i) {
         return i * 20
@@ -77,14 +76,40 @@ function viz(arg1, arg2, arg3){
     }
 
     function computeLabel(d, i) {
-        return 'f' + i
+        return d[0]
     }
 
     // TODO: modify the logic here based on your UI
     // take the first 20 items to visualize    
-    items = _.take(items, 20)
 
-    var viz = _.map(items, function(d, i){                
+    //filter by state that has what we want
+    //then group by city
+    //filter by number of stars
+    //filter by rating (review count)
+    console.log("items: ", items.length)
+    var states = _.filter(items, function(d){
+        return d.state === arg3
+        })   
+    console.log(states[0])
+
+    var stars = _.filter(states, function(d){
+        return d.stars >= arg2
+        })  
+    console.log("stars is: ", stars[0])    
+
+    var review = _.filter(stars, function(d){
+        return d.review_count >= arg1
+    })    
+
+    var groups = _.groupBy(review, function(d){
+        return d.city
+    })
+
+    var pair = _.pairs(groups)
+    console.log("pair is: ", pair)
+    items = _.take(items, 100)
+
+    var viz = _.map(pair, function(d, i){                
                 return {
                     x: computeX(d, i),
                     y: computeY(d, i),
@@ -105,9 +130,9 @@ function viz(arg1, arg2, arg3){
 }
 
 $('button#viz').click(function(){    
-    var arg1 = 'TODO'
-    var arg2 = 'TODO'
-    var arg3 = 'TODO'    
+    var arg1 = $('input#arg1').val()
+    var arg2 = $('input#arg2').val()
+    var arg3 = $('input#arg3').val()    
     viz(arg1, arg2, arg3)
 })  
 
@@ -116,8 +141,8 @@ $('button#viz').click(function(){
 # Authors
 
 This UI is developed by
-* [Full name](link to github account)
-* [Full name](link to github account)
-* [Full name](link to github account)
-* [Full name](link to github account)
-* [Full name](link to github account)
+* [Caleb Hsu](https://github.com/calebhsu/)
+* [Andrew Linenfelser](https://github.com/Linenfelser)
+* [Zhili Yang](https://github.com/zhya215)
+* [Andrey Shprengel](https://github.com/AndreyShprengel)
+* [Andrew Berumen](https://github.com/anbe6083)
